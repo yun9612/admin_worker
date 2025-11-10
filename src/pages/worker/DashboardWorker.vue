@@ -23,7 +23,7 @@
     </header>
     <!-- main -->
     <main
-      class="bg-gray-100 overflow-y-auto overflow-x-hidden w-full max-h-[calc(100vh-68px)] pt-[100px]">
+      class="bg-gray-100 overflow-y-auto overflow-x-hidden w-full max-h-[calc(100vh-68px)] pt-[110px]">
       <router-view></router-view>
     </main>
     <!-- footer tab -->
