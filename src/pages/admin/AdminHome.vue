@@ -74,3 +74,17 @@ const logout = () => {
   router.push("/admin");
 };
 </script>
+
+<style scoped>
+@media (max-width: 768px) {
+  .fixed {
+    position: relative;
+    width: 100%;
+    height: auto;
+  }
+
+  .ml-64 {
+    margin-left: 0;
+  }
+}
+</style>
