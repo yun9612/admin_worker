@@ -31,7 +31,7 @@ const getWeather = async () => {
     }
     const data = await res.json();
     weather.value = data;
-    console.log(weather.value);
+    // console.log(weather.value);
   } catch (err) {
     error.value = `오류 : ${err.message}`;
   }

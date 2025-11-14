@@ -12,7 +12,7 @@
           <div>
             <p :class="[card.labelClass, 'text-sm mb-1']">{{ card.label }}</p>
             <p class="text-3xl font-bold">
-              {{}}
+              {{ card.value }}
               <span v-if="card.suffix">{{ card.suffix }}</span>
             </p>
           </div>
@@ -25,17 +25,17 @@
       </div>
     </div>
     <!-- 필터링 검색 -->
-    <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm p-4 mb-6 dark:bg-gray-800 dark:text-white">
       <!-- 검색창 전체 -->
       <div class="flex flex-col md:flex-row gap-4">
         <!-- 왼쪽 버튼들 -->
         <div class="flex flex-wrap gap-2 flex-1">
           <button
             :class="[
-              'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+              'px-4 py-2 rounded-lg text-sm font-medium transition-colors ',
               currentFilter === filter.value
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+                ? 'bg-indigo-600 text-white dark:bg-indigo-800'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-white',
             ]"
             @click="currentFilter = filter.value"
             v-for="filter in filters"
@@ -62,38 +62,38 @@
           <thead class="bg-gray-50">
             <tr>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
                 대화 시작일
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
                 고객명
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
                 마지막 메시지
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
                 상태
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
                 응답 시간
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
                 만족도
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
                 관리
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white">
+          <tbody class="bg-white dark:bg-gray-400 dark:text-white">
             <tr
-              class="hover:bg-gray-50 transition-colors"
+              class="hover:bg-gray-50 transition-colors dark:hover:bg-gray-500"
               v-for="conversation in filteredConversations"
               :key="conversation.id">
               <!-- 대화 시작일 -->
@@ -137,7 +137,9 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {{ conversation.responseTime }}분
+                {{
+                  conversation.responseTime === null ? "미응답" : `${conversation.responseTime}분`
+                }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
@@ -168,6 +170,11 @@
           </tbody>
         </table>
       </div>
+      <!-- 필터링된 목록이 빈 항목일 때 -->
+      <div v-if="filteredConversations.length === 0" class="text-center py-12">
+        <i class="fas fa-comments text-6xl text-gray-300 mb-4"></i>
+        <p class="text-gray-500 text-lg">대화 내역이 없습니다.</p>
+      </div>
     </div>
     <!-- 대화 상세 모달 -->
     <!-- 모달 배경 -->
@@ -176,13 +183,14 @@
       class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
       <!-- 모달창 -->
       <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
-        <div class="p-6 border-b flex justify-between items-center">
+        <div
+          class="p-6 border-b flex justify-between items-center dark:bg-gray-800 dark:text-white">
           <!-- 사용자 정보 -->
           <div class="flex items-center">
             <!-- 이름 첫글자 아이콘 -->
             <div
               :class="[
-                'w-12 h-12 rounded-full flex items-center justify-center text-white font-bold',
+                'w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ',
                 getCustomerAvatarBg(selectedConversation.customerName),
               ]">
               {{ selectedConversation.customerName[0] }}
@@ -201,7 +209,8 @@
           </button>
         </div>
         <!-- 대화 내용 -->
-        <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
+        <div
+          class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50 dark:bg-gray-800 dark:text-black">
           <div
             :class="['flex', message.sender === 'customer' ? 'justify-start' : 'justify-end']"
             v-for="message in conversationMessages"
@@ -222,7 +231,7 @@
           </div>
         </div>
         <!-- 대화 입력 및 답변 -->
-        <div class="p-6 border-t bg-white">
+        <div class="p-6 border-t bg-white dark:bg-gray-800 dark:text-white">
           <div class="flex flex-col md:flex-row md:items-center gap-3">
             <!-- 대화 입력창 -->
             <input
@@ -259,7 +268,7 @@
     <div
       v-if="showQuick"
       class="fixed inset-0 bg-black/70 z-60 flex items-center justify-center p-4">
-      <div class="bg-white rounded-lg max-w-2xl w-full">
+      <div class="bg-white rounded-lg max-w-2xl w-full dark:bg-gray-700 dark:text-white">
         <div class="p-6">
           <div class="flex justify-between items-start mb-4">
             <h3 class="text-2xl font-bold">빠른 답변 템플릿</h3>
@@ -274,7 +283,7 @@
               @click="selectTemplate(template)"
               class="p-4 border border-gray-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors text-left">
               <h4 class="font-semibold mb-2">{{ template.title }}</h4>
-              <p class="text-sm text-gray-600">{{ template.content }}</p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">{{ template.content }}</p>
             </button>
           </div>
         </div>
@@ -303,7 +312,7 @@ const statCards = computed(() => [
   {
     id: "total",
     label: "전체 대화",
-    // value: totalConversations.value,
+    value: totalConversations.value,
     suffix: "",
     labelClass: "text-blue-100",
     backgroundClass: "bg-gradient-to-br from-blue-500 to-blue-600",
@@ -313,7 +322,7 @@ const statCards = computed(() => [
   {
     id: "active",
     label: "활성 대화",
-    // value: activeConversations.value,
+    value: activeConversations.value,
     suffix: "",
     labelClass: "text-green-100",
     backgroundClass: "bg-gradient-to-br from-green-500 to-green-600",
@@ -323,7 +332,7 @@ const statCards = computed(() => [
   {
     id: "avg-response",
     label: "평균 응답 시간",
-    // value: avgResponseTime.value,
+    value: avgResponseTime.value,
     suffix: "m",
     labelClass: "text-yellow-100",
     backgroundClass: "bg-gradient-to-br from-yellow-500 to-yellow-600",
@@ -333,7 +342,7 @@ const statCards = computed(() => [
   {
     id: "satisfaction",
     label: "만족도",
-    // value: satisfactionRate.value,
+    value: satisfactionRate.value,
     suffix: "%",
     labelClass: "text-purple-100",
     backgroundClass: "bg-linear-to-br from-purple-500 to-purple-600",
@@ -341,6 +350,26 @@ const statCards = computed(() => [
     iconColor: "text-purple-500",
   },
 ]);
+
+// 통계 - 전체 대화 갯수
+const totalConversations = computed(() => conversations.value.length);
+// 통계 - 활성 대화 갯수
+const activeConversations = computed(
+  () => conversations.value.filter((c) => c.status === "active").length
+);
+// 통계 - 평균 응답 시간 계산
+const avgResponseTime = computed(() => {
+  const times = conversations.value.map((c) => c.responseTime).filter((t) => t !== null);
+  if (times.length === 0) return 0;
+  // reduce() - 배열의 모든 요소를 더하는 함수
+  return Math.round(times.reduce((a, b) => a + b, 0) / times.length);
+});
+// 통계 - 만족도 계산
+const satisfactionRate = computed(() => {
+  const ratings = conversations.value.map((c) => c.rating).filter((r) => r !== null);
+  if (ratings.length === 0) return 0;
+  return Math.fround(ratings.reduce((a, b) => a + b, 0) / ratings.length);
+});
 
 // 검색 버튼 더미
 const filters = [
@@ -356,7 +385,7 @@ const conversations = ref([
     id: 1,
     customerName: "김철수",
     email: "kim@example.com",
-    startDate: new Date("2025-11-10"),
+    startDate: new Date("2025-11-14"),
     lastMessage: "감사합니다. 다음에도 이용하겠습니다!",
     status: "closed",
     responseTime: 15,
@@ -367,7 +396,7 @@ const conversations = ref([
     id: 2,
     customerName: "이영희",
     email: "lee@example.com",
-    startDate: new Date("2025-11-09"),
+    startDate: new Date("2025-11-14"),
     lastMessage: "청소 후 확인을 받아볼 수 있나요?",
     status: "active",
     responseTime: 8,
@@ -378,7 +407,7 @@ const conversations = ref([
     id: 3,
     customerName: "박민수",
     email: "park@example.com",
-    startDate: new Date("2025-11-12"),
+    startDate: new Date("2025-11-14"),
     lastMessage: "혹시 시간 변경이 가능한가요?",
     status: "waiting",
     responseTime: null,
@@ -556,6 +585,10 @@ function sendMessage() {
   allMessages.value.push(message);
   // 마지막 메세지 변경
   selectedConversation.value.lastMessage = message.content;
+  // 응답시간 계산
+  selectedConversation.value.responseTime = Math.round(
+    (new Date() - selectedConversation.value.startDate) / 1000 / 60
+  );
   newMessage.value = "";
 }
 
@@ -592,5 +625,4 @@ function selectTemplate(template) {
     document.querySelector('input[v-model="newMessage"]')?.focus();
   }
 }
-
 </script>
