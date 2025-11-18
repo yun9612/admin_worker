@@ -29,7 +29,7 @@
             </div>
           </div>
           <!-- 접수 구분 -->
-          <div
+          <!-- <div
             class="flex flex-col space-y-2 xl:space-y-0 xl:flex-row xl:items-center xl:space-x-2">
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
               접수 구분
@@ -42,9 +42,9 @@
               <option value="입주청소">입주청소</option>
               <option value="이사청소">이사청소</option>
             </select>
-          </div>
+          </div> -->
           <!-- 접수 상태 -->
-          <div
+          <!-- <div
             class="flex flex-col space-y-2 xl:space-y-0 xl:flex-row xl:items-center xl:space-x-2">
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
               접수상태
@@ -57,14 +57,19 @@
               <option value="진행중">진행중</option>
               <option value="대기중">대기중</option>
             </select>
-          </div>
+          </div> -->
         </div>
       </div>
       <SearchTable
         :filter-options="dashboardFilterOptions"
         :data="filteredReservations"
         search-placeholder="고객명 또는 예약번호로 검색"
-        :search-fields="['customerName', 'id']" />
+        :search-fields="['customerName', 'id']"
+        table-title="예약 목록"
+        :columns="reserColumns"
+        :items-per-page="itemsPerPage"
+        total-label="건의 예약"
+        :filter-fn="dashFilterFn" />
     </div>
     <!-- 기사 현황 -->
     <!-- 차트와 최근 예약 -->
@@ -107,6 +112,9 @@ import Chart from "@/components/Chart.vue";
 import DashboardStats from "@/components/DashboardStats.vue";
 import SearchTable from "@/components/SearchTable.vue";
 import { computed, ref } from "vue";
+
+// 페이지당 아이템 수
+const itemsPerPage = ref(5);
 
 // 통계카드 더미
 const stats = [
@@ -271,4 +279,59 @@ const dashboardFilterOptions = [
     ],
   },
 ];
+
+// 테이블 칼럼 정의 더미
+const reserColumns = [
+  { label: "예약번호", key: "id" },
+  { label: "고객명", key: "customerName" },
+  { label: "청소유형", key: "type" },
+  {
+    label: "예약일시",
+    key: "date",
+    render: (item) => formatDate(item.date),
+  },
+  {
+    label: "상태",
+    key: "status",
+    render: (item) =>
+      `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(
+        item.status
+      )}">${item.status}</span>`,
+  },
+  { label: "담당기사", key: "worker" },
+  {
+    label: "액션",
+    key: "action",
+    render: (item) =>
+      `<button onclick="window.handleReservationClick('${item.id}')" class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 mr-3"><i class="fa-solid fa-eye mr-1"></i> 상세</button>`,
+  },
+];
+
+// 날짜 포멧 변경
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString("ko-KR", {
+    year: "numeric", // 년도
+    month: "long", // 월 (한글 월 이름)
+    day: "numeric", // 일
+    weekday: "long", // 요일 (한글 요일 이름)
+  });
+};
+
+// 커스텀 필터 함수(날짜 범위 포함)
+const dashFilterFn = (data, filters) => {
+  let result = [...data];
+  console.log(result);
+  console.log(filters);
+  
+  // 서비스 필터링
+  if (filters.serviceType && filters.serviceType !== "all") {
+    result = result.filter((reser) => reser.type === filters.serviceType);
+  }
+  // 접수 상태 필터링
+  if (filters.receiptStatus && filters.receiptStatus !== "all") {
+    result = result.filter((reser) => reser.status === filters.receiptStatus);
+  }
+
+  return result;
+};
 </script>

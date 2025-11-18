@@ -8,8 +8,9 @@
           <div class="relative">
             <input
               v-model="localSearchQuery"
+              @input="handleInput"
               type="text"
-              :placeholder="searchPlaceHolder"
+              :placeholder="searchPlaceholder"
               class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
             <i class="fas fa-search absolute left-3 top-3 text-gray-400 dark:text-gray-500"></i>
           </div>
@@ -18,6 +19,7 @@
         <div v-if="filterOptions && filterOptions.length > 0" class="flex gap-2">
           <select
             @change="handleFilterChange"
+            v-model="localFilters[filter.key]"
             class="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             v-for="(filter, index) in filterOptions"
             :key="index">
@@ -30,8 +32,44 @@
     </div>
     <!-- 테이블 영역 -->
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
-      <div>
-        <h2>{{}}</h2>
+      <div v-if="tableTitle" class="p-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white">{{ tableTitle }}</h2>
+      </div>
+      <!-- 테이블 목록 -->
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <!-- 테이블 헤드 -->
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                v-for="column in columns"
+                :key="column.key">
+                {{ column.label }}
+              </th>
+            </tr>
+          </thead>
+          <!-- 테이블 내용 -->
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr
+              v-for="item in paginatedData"
+              :key="item.id"
+              class="hover:bg-gray-50 dark:hover:bg-gray-700">
+              <td
+                class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300"
+                v-for="column in columns"
+                :key="column.key">
+                <span v-html="renderCell(item, column)"></span>
+              </td>
+            </tr>
+            <!-- 데이터가 없을 경우 -->
+            <tr v-if="filteredData.length === 0">
+              <td class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                데이터가 없습니다.
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
     <!-- 페이지네이션 -->
@@ -40,6 +78,33 @@
       <div class="text-sm text-gray-700 dark:text-gray-300">
         총
         <span>{{ filteredData.length }}</span>
+        {{ totalLabel }}
+      </div>
+      <div class="flex gap-2">
+        <button
+          @click="prevPage"
+          :disabled="currentPage === 1"
+          class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button
+          @click="goToPage(page)"
+          :class="[
+            currentPage === page
+              ? 'bg-indigo-600 text-white border-indigo-600'
+              : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300',
+            'px-3 py-1 border rounded',
+          ]"
+          v-for="page in totalPages"
+          :key="page">
+          {{ page }}
+        </button>
+        <button
+          @click="nextPage"
+          :disabled="currentPage === totalPages"
+          class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300">
+          <i class="fas fa-chevron-right"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -61,7 +126,7 @@ const props = defineProps({
     default: () => [],
   },
   // 검색 플레이스홀더
-  searchPlaceHolder: {
+  searchPlaceholder: {
     type: String,
     default: "검색",
   },
@@ -75,7 +140,45 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  // 테이블 타이틀
+  tableTitle: {
+    type: String,
+    default: "",
+  },
+  // 테이블 칼럼 정의
+  columns: {
+    type: Array,
+    required: true,
+  },
+  // 페이지당 아이템 수
+  itemsPerPage: {
+    type: Number,
+    default: 5,
+  },
+  // 총 갯수 라벨(예 : '명', '건')
+  totalLabel: {
+    type: String,
+    default: "개",
+  },
+  // 필터 함수(커스텀 필터링 로직)
+  filterFn: {
+    type: Function,
+    default: null,
+  },
 });
+
+// 한글 입력해도 바로 검색이 되도록 하는 함수
+function handleInput(event) {
+  localSearchQuery.value = event.target.value;
+  // 검색 할 때는 첫번째 페이지부터 다시 보기
+  currentPage.value = 1;
+}
+
+// 필터가 바뀔때 실행되는 함수
+const handleFilterChange = () => {
+  // 첫번째 페이지부터 다시 보기
+  currentPage.value = 1;
+};
 
 // 필터 초기화
 // 만약에 필터 옵션이 있고 그 안에 내용이 있다면
@@ -104,9 +207,74 @@ const filteredData = computed(() => {
       });
     });
   }
+  // 만약에 커스텀 필터 함수(filterFn)가 있으면 그 함수를 사용해서 필터링
+  if (props.filterFn) {
+    result = props.filterFn(result, localFilters.value);
+  } else {
+    // 커스텀 함수가 없으면 기본 필터 형식으로 작동
+    Object.keys(localFilters.value).forEach((filterKey) => {
+      const filterValue = localFilters.value[filterKey];
+      // 필터값이 있고 all이나 빈 문자열이 아닐때만 실행
+      if (filterValue && filterValue !== "all" && filterValue !== "") {
+        // result에서 해당 필터 조건에 맞는 것만 남기기
+        result = result.filter((item) => {
+          return (
+            // 필드 값이 필터 값과 같거나 숫자일 경우엔 필터가 이상인 것도 허용
+            item[filterKey] === filterValue ||
+            (typeof item[filterKey] === "number" && item[filterKey] >= parseFloat(filterValue))
+          );
+        });
+      }
+    });
+  }
   // 다 필터링된 결과를 반환
   return result;
 });
+
+const currentPage = ref(1);
+// 페이지네이션된 데이터 계산
+const paginatedData = computed(() => {
+  const start = (currentPage.value - 1) * props.itemsPerPage; // 0
+  const end = start + props.itemsPerPage; // 5
+  return filteredData.value.slice(start, end);
+});
+
+// 전체 페이지 수 계산
+const totalPages = computed(() => {
+  return Math.ceil(filteredData.value.length / props.itemsPerPage);
+});
+
+// 셀 렌더링 함수
+const renderCell = (item, column) => {
+  // 커스텀 렌더링 함수가 있으면 사용
+  if (column.render && typeof column.render === "function") {
+    return column.render(item);
+  }
+  // 기본값 : 필드값 그대로 표시
+  const value = item[column.key];
+  return value !== undefined && value !== null ? value : "";
+};
+
+// 페이지 이동 함수
+const goToPage = (page) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
+
+// 다음페이지
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+};
+
+// 이전페이지
+const prevPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+};
 
 // 데이터 변경시
 watch(() => props.data, { deep: true });
