@@ -6,11 +6,14 @@
     </p>
     <!-- 통계 카드 -->
     <DashboardStats :stats="stats" />
+    <!-- 기사 목록 -->
+    <Worker_dash />
   </div>
 </template>
 
 <script setup>
 import DashboardStats from "@/components/DashboardStats.vue";
+import Worker_dash from "@/components/Worker_dash.vue";
 import { ref } from "vue";
 
 const stats = ref([

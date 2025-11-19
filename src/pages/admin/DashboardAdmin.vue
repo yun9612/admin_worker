@@ -69,9 +69,135 @@
         :columns="reserColumns"
         :items-per-page="itemsPerPage"
         total-label="건의 예약"
-        :filter-fn="dashFilterFn" />
+        :filter-fn="dashFilterFn"
+        @row-click="handleRowClick" />
+    </div>
+    <!-- 예약 상세 모달 -->
+    <div
+      v-if="selectedReser"
+      class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center p-4 z-50">
+      <div
+        class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <!-- 모달 상단 -->
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">예약 상세 정보</h3>
+            <button
+              @click="closeModal"
+              class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <!-- 모달 내용 -->
+        <div class="p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 기본 정보 -->
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">기본 정보</h4>
+                <div class="space-y-2">
+                  <div class="flex items-center">
+                    <label class="w-32 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      예약 번호
+                    </label>
+                    <span class="text-sm text-gray-900 dark:text-white">
+                      {{ selectedReser.id }}
+                    </span>
+                  </div>
+                  <div class="flex items-center">
+                    <label class="w-32 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      고객명
+                    </label>
+                    <span class="text-sm text-gray-900 dark:text-white">
+                      {{ selectedReser.customerName }}
+                    </span>
+                  </div>
+                  <div class="flex items-center">
+                    <label class="w-32 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      청소 유형
+                    </label>
+                    <select
+                      v-model="selectedReser.type"
+                      class="ml-2 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                      <option value="일반청소">일반청소</option>
+                      <option value="입주청소">입주청소</option>
+                      <option value="이사청소">이사청소</option>
+                    </select>
+                  </div>
+                  <div class="flex items-center">
+                    <label class="w-32 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      예약 일시
+                    </label>
+                    <input
+                      type="datetime-local"
+                      v-model="selectedReser.date"
+                      class="ml-2 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- 상태 정보 -->
+            <div class="space-y-6">
+              <div>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">상태 정보</h4>
+                <div class="space-y-2">
+                  <div class="flex items-center">
+                    <label class="w-32 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      상태
+                    </label>
+                    <select
+                      v-model="selectedReser.status"
+                      class="ml-2 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                      <option value="예약완료">예약완료</option>
+                      <option value="진행중">진행중</option>
+                      <option value="대기중">대기중</option>
+                    </select>
+                  </div>
+                  <div class="flex items-center">
+                    <label class="w-32 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      담당 기사
+                    </label>
+                    <select
+                      v-model="selectedReser.worker"
+                      class="ml-2 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
+                      <option value="-">미배정</option>
+                      <option value="이지은">이지은</option>
+                      <option value="최윤호">최윤호</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <h4 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">메모</h4>
+                <textarea
+                  rows="3"
+                  v-model="selectedReser.memo"
+                  class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  placeholder="예약에 대한 메모를 입력하세요"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- 하단 버튼 -->
+        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 flex justify-end space-x-3">
+          <!-- 닫기 버튼 -->
+          <button
+            @click="closeModal"
+            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600">
+            닫기
+          </button>
+          <!-- 저장 버튼 -->
+          <button
+            @click="saveReservaton"
+            class="px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700">
+            저장
+          </button>
+        </div>
+      </div>
     </div>
     <!-- 기사 현황 -->
+    <Worker_dash />
     <!-- 차트와 최근 예약 -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- 차트 -->
@@ -111,10 +237,14 @@
 import Chart from "@/components/Chart.vue";
 import DashboardStats from "@/components/DashboardStats.vue";
 import SearchTable from "@/components/SearchTable.vue";
+import Worker_dash from "@/components/Worker_dash.vue";
 import { computed, ref } from "vue";
 
 // 페이지당 아이템 수
 const itemsPerPage = ref(5);
+
+// 선택된 예약 정보
+const selectedReser = ref(null);
 
 // 통계카드 더미
 const stats = [
@@ -171,9 +301,9 @@ const dateRange = ref({
   end: "", // 종료일
 });
 // 서비스 유형
-const serviceType = ref("all");
-// 서비스 상태
-const receiptStatus = ref("all");
+// const serviceType = ref("all");
+// // 서비스 상태
+// const receiptStatus = ref("all");
 
 // 예약 정보
 const reservations = ref([
@@ -247,14 +377,14 @@ const filteredReservations = computed(() => {
   let result = [...reservations.value]; // 예약 목록 복사
   // 날짜를 필터링
 
-  // 청소 서비스 유형 필터링
-  if (serviceType.value !== "all") {
-    result = result.filter((reservation) => reservation.type === serviceType.value);
-  }
-  // 접수 상태 필터링
-  if (receiptStatus.value !== "all") {
-    result = result.filter((reservation) => reservation.type === receiptStatus.value);
-  }
+  // // 청소 서비스 유형 필터링
+  // if (serviceType.value !== "all") {
+  //   result = result.filter((reservation) => reservation.type === serviceType.value);
+  // }
+  // // 접수 상태 필터링
+  // if (receiptStatus.value !== "all") {
+  //   result = result.filter((reservation) => reservation.type === receiptStatus.value);
+  // }
   return result;
 });
 
@@ -307,6 +437,44 @@ const reserColumns = [
   },
 ];
 
+// 행클릭 핸들러
+const handleRowClick = (item) => {
+  // console.log(item);
+  showReserDetails(item);
+};
+// 예약 관리 상세 모달
+const showReserDetails = (reservation) => {
+  selectedReser.value = { ...reservation };
+};
+// 예약 상세 모달 닫기
+const closeModal = () => {
+  selectedReser.value = null;
+};
+
+// 예약 정보 저장 함수
+const saveReservaton = () => {
+  // 입력값 유효성 검사
+  if (!selectedReser.value.date) {
+    alert("예약 일시는 필수 입력 항목입니다.");
+    return;
+  }
+  const index = reservations.value.findIndex((r) => r.id === selectedReser.value.id);
+  if (index !== -1) {
+    reservations.value[index] = { ...selectedReser.value };
+  }
+  // 저장 후 모달 닫기
+  closeModal();
+};
+
+// 전역 함수로 등록(컴포넌트 내부에서 사용)
+window.handleReservationClick = (id) => {
+  // console.log(id);
+  const reservation = reservations.value.find((r) => r.id === id);
+  if (reservation) {
+    showReserDetails(reservation);
+  }
+};
+
 // 날짜 포멧 변경
 const formatDate = (date) => {
   return new Date(date).toLocaleDateString("ko-KR", {
@@ -317,12 +485,37 @@ const formatDate = (date) => {
   });
 };
 
+// 날짜 문자열에서 YYYY-MM-DD 형식만 추출하는 함수
+// 시간 문자열만 비교하도록 변경
+const extractDateOnly = (dateString) => {
+  // console.log(dateString);
+
+  // "2025-11-17 10:00" 형식에서 "2025-11-17"만 추출
+  // 또는 이미 "2025-11-17" 형식이면 그대로 반환
+  if (!dateString) return "";
+  return dateString.split(" ")[0].split("T")[0];
+  // return dateString;
+};
+
 // 커스텀 필터 함수(날짜 범위 포함)
 const dashFilterFn = (data, filters) => {
   let result = [...data];
-  console.log(result);
-  console.log(filters);
-  
+  // console.log(result);
+  // console.log(filters);
+
+  // 날짜를 필터링
+  if (dateRange.value.start && dateRange.value.end) {
+    const startDate = extractDateOnly(dateRange.value.start);
+    const endDate = extractDateOnly(dateRange.value.end);
+    // console.log(startDate, endDate);
+    result = result.filter((reser) => {
+      const reserDate = extractDateOnly(reser.date);
+
+      // 문자열 비교로 날짜 범위 확인 (종료일 포함)
+      return reserDate >= startDate && reserDate <= endDate;
+    });
+  }
+
   // 서비스 필터링
   if (filters.serviceType && filters.serviceType !== "all") {
     result = result.filter((reser) => reser.type === filters.serviceType);
