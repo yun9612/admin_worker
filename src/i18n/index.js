@@ -73,9 +73,9 @@ const ja = {
 
 // i18n 인스턴스 생성
 const i18n = createI18n({
-  legacy: false, // Composition API 사용 여부
-  locale: localStorage.getItem("language") || "ko", // 기본 언어 설정
-  fallbackLocale: "ko", // 번역이 없을 경우 사용할 언어
+  legacy: false, // Composition API사용
+  locale: localStorage.getItem("language") || "ko", //  기본언어 설정
+  fallbackLocale: "ko", //번영이 없을 경우 사용할 언어
   messages: {
     ko,
     en,

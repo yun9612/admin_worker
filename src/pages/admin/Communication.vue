@@ -4,103 +4,93 @@
     <!-- 고객 소통 통계 -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
       <div
+        :class="[card.backgroundClass, 'rounded-lg shadow-lg p-6 text-white']"
         v-for="card in statCards"
-        :key="card.id"
-        :class="[card.backgroundClass, 'rounded-lg shadow-lg p-6 text-white']">
+        :key="card.id">
         <div class="flex items-center justify-between">
-          <!-- 카드 속 글자 -->
           <div>
             <p :class="[card.labelClass, 'text-sm mb-1']">{{ card.label }}</p>
             <p class="text-3xl font-bold">
-              {{ card.value }}
-              <span v-if="card.suffix">{{ card.suffix }}</span>
+              {{ card.value }} <span v-if="card.suffix">{{ card.suffix }}</span>
             </p>
           </div>
-          <!-- 카드 속 아이콘 -->
-          <div
-            class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+          <div class="w-14 h-14 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
             <i :class="[card.iconClass, 'text-2xl', card.iconColor]"></i>
           </div>
         </div>
       </div>
     </div>
-    <!-- 필터링 검색 -->
+    <!-- 필터 및 검색 -->
     <div class="bg-white rounded-lg shadow-sm p-4 mb-6 dark:bg-gray-800 dark:text-white">
-      <!-- 검색창 전체 -->
-      <div class="flex flex-col md:flex-row gap-4">
-        <!-- 왼쪽 버튼들 -->
-        <div class="flex flex-wrap gap-2 flex-1">
+      <div class="flex flex-col md:flex-row gap-4 dark:text-white">
+        <div class="flex flex-wrap gap-2 flex-1 dark:text-white">
           <button
+            v-for="filter in filters"
+            :key="filter.value"
+            @click="currentFilter = filter.value"
             :class="[
               'px-4 py-2 rounded-lg text-sm font-medium transition-colors ',
               currentFilter === filter.value
                 ? 'bg-indigo-600 text-white dark:bg-indigo-800'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-white',
-            ]"
-            @click="currentFilter = filter.value"
-            v-for="filter in filters"
-            :key="filter.value">
-            <i :class="[filter.icon, 'mr-2']"></i>
-            {{ filter.label }}
+                : 'bg-gray-100  text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-white',
+            ]">
+            <i :class="[filter.icon, 'mr-2']"></i> {{ filter.label }}
           </button>
         </div>
-        <!-- 검색창 -->
         <div class="flex gap-2">
           <input
-            class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
             v-model="searchQuery"
-            type="text"
             @input="handleInput"
-            placeholder="고객명으로 검색" />
+            type="text"
+            placeholder="고객명으로 검색4..."
+            class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
         </div>
       </div>
     </div>
     <!-- 대화 목록 -->
-    <div class="bg-white rounded-lg shadow-sm">
+    <div class="bg-white rounded-lg shadow-sm dark:bg-gray-800 dark:text-white">
       <div class="overflow-x-auto">
         <table class="w-full">
-          <thead class="bg-gray-50">
-            <tr>
+          <thead class="bg-gray-50 dark:bg-gray-800 dark:text-white">
+            <tr >
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-white">
                 대화 시작일
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-white">
                 고객명
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-white">
                 마지막 메시지
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-white">
                 상태
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-white">
                 응답 시간
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-white">
                 만족도
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:bg-gray-800 dark:text-white">
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-white">
                 관리
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white dark:bg-gray-400 dark:text-white">
+          <tbody class="bg-white dark:bg-gray-700">
             <tr
-              class="hover:bg-gray-50 transition-colors dark:hover:bg-gray-500"
               v-for="conversation in filteredConversations"
-              :key="conversation.id">
-              <!-- 대화 시작일 -->
+              :key="conversation.id"
+              class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {{ formatDate(conversation.startDate) }}
               </td>
-              <!-- 고객명 -->
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <p
@@ -110,6 +100,7 @@
                     ]">
                     {{ conversation.customerName[0] }}
                   </p>
+
                   <span class="ml-3 text-sm text-gray-900">{{ conversation.customerName }}</span>
                 </div>
               </td>
@@ -117,10 +108,10 @@
                 <div class="flex items-center">
                   <span>{{ conversation.lastMessage }}</span>
                   <span
+                    class="ml-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center"
                     v-if="conversation.unreadCount > 0"
-                    class="ml-2 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
-                    {{ conversation.unreadCount }}
-                  </span>
+                    >{{ conversation.unreadCount }}</span
+                  >
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -137,9 +128,7 @@
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {{
-                  conversation.responseTime === null ? "미응답" : `${conversation.responseTime}분`
-                }}
+                {{ conversation.responseTime === null ? "미응답" : `${conversation.responseTime}분` }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
@@ -152,78 +141,71 @@
                         i <= conversation.rating ? 'text-yellow-400' : 'text-gray-300',
                       ]"></i>
                   </div>
-                  <span class="ml-2 text-xs text-gray-600" v-if="conversation.rating">
+                  <span v-if="conversation.rating" class="ml-2 text-xs text-gray-600">
                     ({{ conversation.rating }})
                   </span>
-                  <span class="ml-2 text-xs text-gray-400" v-else>미평가</span>
+                  <span v-else class="ml-2 text-xs text-gray-400">미평가</span>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                <button
-                  class="text-indigo-600 hover:text-indigo-900"
-                  @click="openConversation(conversation)">
-                  <i class="fas fa-comment-dots mr-1"></i>
-                  대화보기
+                <button class="text-indigo-600 hover:text-indigo-900" @click="openConversation(conversation)">
+                  <i class="fas fa-comment-dots mr-1"></i> 대화 보기
                 </button>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-      <!-- 필터링된 목록이 빈 항목일 때 -->
+      <!-- 빈상태 -->
       <div v-if="filteredConversations.length === 0" class="text-center py-12">
         <i class="fas fa-comments text-6xl text-gray-300 mb-4"></i>
         <p class="text-gray-500 text-lg">대화 내역이 없습니다.</p>
       </div>
     </div>
     <!-- 대화 상세 모달 -->
-    <!-- 모달 배경 -->
     <div
-      v-if="selectedConversation"
-      class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
-      <!-- 모달창 -->
-      <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col">
-        <div
-          class="p-6 border-b flex justify-between items-center dark:bg-gray-800 dark:text-white">
+      v-if="selectedConverstaion"
+      class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 dark:bg-black dark:text-white">
+      <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col dark:bg-gray-700">
+        <div class="p-6 border-b flex justify-between items-center">
           <!-- 사용자 정보 -->
           <div class="flex items-center">
-            <!-- 이름 첫글자 아이콘 -->
             <div
               :class="[
                 'w-12 h-12 rounded-full flex items-center justify-center text-white font-bold ',
-                getCustomerAvatarBg(selectedConversation.customerName),
+                getCustomerAvatarBg(selectedConverstaion.customerName),
               ]">
-              {{ selectedConversation.customerName[0] }}
+              {{ selectedConverstaion.customerName[0] }}
             </div>
-            <!-- 이름 이메일 -->
             <div class="ml-4">
-              <h3 class="text-xl font-bold">{{ selectedConversation.customerName }}</h3>
-              <p class="text-sm text-gray-500">{{ selectedConversation.email }}</p>
+              <h3 class="text-xl font-bold ">
+                {{ selectedConverstaion.customerName }}
+              </h3>
+              <p class="text-sm text-gray-500">
+                {{ selectedConverstaion.email }}
+              </p>
             </div>
           </div>
-          <!-- 닫기 버튼 -->
-          <button
-            class="text-gray-400 hover:text-gray-600 cursor-pointer"
-            @click="selectedConversation = null">
+          <!-- 닫기 -->
+          <button class="text-gray-400 hover:text-gray-600 cursor-pointer" @click="selectedConverstaion = null">
             <i class="fas fa-times text-2xl"></i>
           </button>
         </div>
         <!-- 대화 내용 -->
-        <div
-          class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50 dark:bg-gray-800 dark:text-black">
+        <div class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50 dark:bg-gray-700">
           <div
-            :class="['flex', message.sender === 'customer' ? 'justify-start' : 'justify-end']"
             v-for="message in conversationMessages"
-            :key="message.id">
-            <!-- 메세지 정렬 및 데이터 확인 -->
+            :key="message.id"
+            :class="['flex', message.sender === 'customer' ? 'justify-start' : 'justify-end']">
+            <!-- 메시지 정렬 및 데이터 확인 -->
             <div
               :class="[
                 'max-w-lg',
-                message.sender === 'customer' ? 'bg-white' : 'bg-indigo-600 text-white',
+                message.sender === 'customer' ? 'bg-white dark:bg-gray-800' : 'bg-indigo-600 text-white',
                 'rounded-lg p-4 shadow-sm',
               ]">
               <div class="text-xs mb-1 opacity-70">
-                {{ message.sender === "customer" ? selectedConversation.customerName : "관리자" }}
+                {{ message.sender === "customer" ? selectedConverstaion.customerName : "관리자" }}
               </div>
               <div class="text-sm">{{ message.content }}</div>
               <div class="text-xs mt-2 opacity-70">{{ formatDateTime(message.timestamp) }}</div>
@@ -231,44 +213,38 @@
           </div>
         </div>
         <!-- 대화 입력 및 답변 -->
-        <div class="p-6 border-t bg-white dark:bg-gray-800 dark:text-white">
+        <div class="p-6 border-t bg-white dark:bg-gray-700">
           <div class="flex flex-col md:flex-row md:items-center gap-3">
-            <!-- 대화 입력창 -->
             <input
               type="text"
               v-model="newMessage"
-              placeholder="메세지를 입력하세요."
+              placeholder="메시지를 입력하세요..."
               @keyup.enter="sendMessage"
               class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" />
             <div class="flex flex-wrap gap-2">
               <button
                 @click="openQuick"
                 class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                <i class="fas fa-bolt mr-2"></i>
-                빠른 답변
+                <i class="fas fa-bolt mr-2"></i> 빠른 답변
               </button>
               <button
                 @click="sendMessage"
                 class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
-                <i class="fas fa-paper-plane mr-2"></i>
-                전송
+                <i class="fas fa-paper-plane mr-2"></i> 전송
               </button>
               <button
                 @click="markAnswered"
                 class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <i class="fas fa-check-circle mr-2"></i>
-                답변 완료
+                <i class="fas fa-check-circle mr-2"></i> 답변 완료
               </button>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- 빠른 답변 모달 -->
-    <div
-      v-if="showQuick"
-      class="fixed inset-0 bg-black/70 z-60 flex items-center justify-center p-4">
-      <div class="bg-white rounded-lg max-w-2xl w-full dark:bg-gray-700 dark:text-white">
+    <!-- 빠른 답번 모달 -->
+    <div v-if="showQuick" class="fixed inset-0 bg-black/80 z-60 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg max-w-2xl w-full">
         <div class="p-6">
           <div class="flex justify-between items-start mb-4">
             <h3 class="text-2xl font-bold">빠른 답변 템플릿</h3>
@@ -283,7 +259,7 @@
               @click="selectTemplate(template)"
               class="p-4 border border-gray-300 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors text-left">
               <h4 class="font-semibold mb-2">{{ template.title }}</h4>
-              <p class="text-sm text-gray-600 dark:text-gray-400">{{ template.content }}</p>
+              <p class="text-sm text-gray-600">{{ template.content }}</p>
             </button>
           </div>
         </div>
@@ -291,23 +267,17 @@
     </div>
   </div>
 </template>
-
 <script setup>
 import { computed, ref } from "vue";
-
-// 기본값
-const currentFilter = ref("all"); // 버튼
-const searchQuery = ref(""); // 검색창
-const selectedConversation = ref(null);
+const currentFilter = ref("all");
+const searchQuery = ref("");
+const selectedConverstaion = ref(null);
 const newMessage = ref("");
 const showQuick = ref(false);
-
-// input의 한글 이슈 해결
+// 한글이슈해결
 function handleInput(event) {
   searchQuery.value = event.target.value;
 }
-
-// 통계 카드 더미
 const statCards = computed(() => [
   {
     id: "total",
@@ -350,36 +320,61 @@ const statCards = computed(() => [
     iconColor: "text-purple-500",
   },
 ]);
-
-// 통계 - 전체 대화 갯수
 const totalConversations = computed(() => conversations.value.length);
-// 통계 - 활성 대화 갯수
-const activeConversations = computed(
-  () => conversations.value.filter((c) => c.status === "active").length
-);
-// 통계 - 평균 응답 시간 계산
+const activeConversations = computed(() => conversations.value.filter((c) => c.status === "active").length);
 const avgResponseTime = computed(() => {
   const times = conversations.value.map((c) => c.responseTime).filter((t) => t !== null);
   if (times.length === 0) return 0;
-  // reduce() - 배열의 모든 요소를 더하는 함수
-  return Math.round(times.reduce((a, b) => a + b, 0) / times.length);
+  // reduce()배열의 모든 요소를 더하는 함수
+  return Math.round(
+    times.reduce((a, b) => {
+      // console.log(a, b);
+
+      return a + b;
+    }, 0) / times.length
+  );
 });
-// 통계 - 만족도 계산
 const satisfactionRate = computed(() => {
   const ratings = conversations.value.map((c) => c.rating).filter((r) => r !== null);
+  // console.log(ratings);
   if (ratings.length === 0) return 0;
-  return Math.fround(ratings.reduce((a, b) => a + b, 0) / ratings.length);
+  return Math.round(
+    ratings.reduce((a, b) => {
+      // console.log(a,b);
+      return a + b;
+    }, 0) / ratings.length
+  );
 });
-
-// 검색 버튼 더미
 const filters = [
   { label: "전체", value: "all", icon: "fas fa-list" },
   { label: "활성", value: "active", icon: "fas fa-comment-dots" },
   { label: "대기중", value: "waiting", icon: "fas fa-clock" },
   { label: "완료", value: "closed", icon: "fas fa-check-circle" },
 ];
-
-// 목록 샘플 더미
+// 빠른 답변 템플릿
+const quickTemplates = ref([
+  {
+    id: 1,
+    title: "안녕하세요",
+    content: "안녕하세요. 고객님의 문의에 답변드리겠습니다.",
+  },
+  {
+    id: 2,
+    title: "예약 확인",
+    content: "예약이 정상적으로 접수되었습니다. 담당 기사가 연락드리겠습니다.",
+  },
+  {
+    id: 3,
+    title: "감사 인사",
+    content: "이용해 주셔서 감사합니다. 만족스러운 서비스 제공을 위해 노력하겠습니다.",
+  },
+  {
+    id: 4,
+    title: "대기 요청",
+    content: "잠시만 기다려 주세요. 담당자가 확인 중입니다.",
+  },
+]);
+// 샘플 데이터
 const conversations = ref([
   {
     id: 1,
@@ -396,12 +391,12 @@ const conversations = ref([
     id: 2,
     customerName: "이영희",
     email: "lee@example.com",
-    startDate: new Date("2025-11-14"),
+    startDate: new Date("2025-11-13"),
     lastMessage: "청소 후 확인을 받아볼 수 있나요?",
     status: "active",
     responseTime: 8,
     rating: 4,
-    unreadCount: 1,
+    unreadCount: 2,
   },
   {
     id: 3,
@@ -437,7 +432,7 @@ const allMessages = ref([
     conversationId: 2,
     sender: "customer",
     content: "청소는 언제 시작되나요?",
-    timestamp: new Date("2025-11-10T09:00:00"),
+    timestamp: new Date("2025-11-11T09:00:00"),
   },
   {
     id: 4,
@@ -461,54 +456,23 @@ const allMessages = ref([
     timestamp: new Date("2025-11-11T08:00:00"),
   },
 ]);
-
-// 빠른 답변 템플릿
-const quickTemplates = ref([
-  {
-    id: 1,
-    title: "안녕하세요",
-    content: "안녕하세요. 고객님의 문의에 답변드리겠습니다.",
-  },
-  {
-    id: 2,
-    title: "예약 확인",
-    content: "예약이 정상적으로 접수되었습니다. 담당 기사가 연락드리겠습니다.",
-  },
-  {
-    id: 3,
-    title: "감사 인사",
-    content: "이용해 주셔서 감사합니다. 만족스러운 서비스 제공을 위해 노력하겠습니다.",
-  },
-  {
-    id: 4,
-    title: "대기 요청",
-    content: "잠시만 기다려 주세요. 담당자가 확인 중입니다.",
-  },
-]);
-
-// 새로운 메세지를 전송하였을 때 id값을 증가시키기 위함
-const messageIdCounter = ref(
-  allMessages.value.length ? Math.max(...allMessages.value.map((m) => m.id)) + 1 : 1
-);
-
-// 목록 샘플 데이터 필터링
+// 새로운 메시지를 추가할 때 id 값을 증가 시키기 위해서
+const messageIdCounter = ref(allMessages.value.length ? Math.max(...allMessages.value.map((m) => m.id)) + 1 : 1);
+// 계산된 속성
 const filteredConversations = computed(() => {
-  // 버튼으로 필터링
   let result = conversations.value;
   if (currentFilter.value !== "all") {
     result = result.filter((c) => c.status === currentFilter.value);
   }
-
-  // input에 입력한 값 필터링
+  // a-b 내림차순 정렬 - 큰 수 부터
+  // b-a 오름차순 정렬 - 작은 수부터
+  // 이름으로 검색하기
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase();
     result = result.filter((c) => c.customerName.toLowerCase().includes(query));
   }
-
-  // 목록 오름차순 b-a 정렬하는 코드 -작은수부터 / 내림차순 a-b -큰수부터
   return result.sort((a, b) => b.startDate - a.startDate);
 });
-
 // 날짜 포멧
 function formatDate(date) {
   return new Date(date).toLocaleDateString("ko-KR", {
@@ -517,8 +481,6 @@ function formatDate(date) {
     day: "2-digit",
   });
 }
-
-// 시간 포맷
 function formatDateTime(date) {
   if (!date) return "";
   return new Date(date).toLocaleString("ko-KR", {
@@ -530,23 +492,18 @@ function formatDateTime(date) {
   });
 }
 
-// 이름 앞 아이콘
 function getCustomerAvatarBg(name) {
-  const colors = [
-    "bg-blue-500",
-    "bg-green-500",
-    "bg-yellow-500",
-    "bg-purple-500",
-    "bg-pink-500",
-    "bg-indigo-500",
-  ];
-  // charCodeAt() - 문자열의 첫번째 문자의 유니코드 값 반환 메서드
+  const colors = ["bg-blue-500", "bg-green-500", "bg-yellow-500", "bg-purple-500", "bg-pink-500", "bg-indigo-500"];
+  // charCodeAt - 문자열의 첫 번째 문자의 유니코드 값을 반환하는 메서드
   const index = name.charCodeAt(0) % colors.length;
+  // console.log(index);
+
   return colors[index];
 }
-
-// 상태 문구
+// 상태 변경
 function getStatusText(status) {
+  console.log(status);
+
   const statusMap = {
     active: "진행중",
     waiting: "대기중",
@@ -554,72 +511,58 @@ function getStatusText(status) {
   };
   return statusMap[status];
 }
-
-// 대화보기 버튼 클릭 시 모달 오픈
+// 상세 대화 보기
 function openConversation(conversation) {
-  // console.log(conversation); 해당 더미가 들어오는지 확인
-  selectedConversation.value = conversation;
+  // console.log(conversation);
+  selectedConverstaion.value = conversation;
 }
-
 // 대화 내용
 const conversationMessages = computed(() => {
-  if (!selectedConversation.value) return []; // 선택된 대화가 없으면 빈 배열 반환
+  if (!selectedConverstaion.value) return []; //선택된 대화가 없으면 빈 배열 반환
   return allMessages.value
-    .filter((m) => m.conversationId === selectedConversation.value.id)
+    .filter((m) => m.conversationId === selectedConverstaion.value.id)
     .sort((a, b) => a.timestamp - b.timestamp);
 });
-
-// 메세지 전송
+//  메시지 전송
 function sendMessage() {
-  if (!newMessage.value.trim() || !selectedConversation.value) return;
-  // 입력값이 더미로 생성됨
+  if (!newMessage.value.trim() || !selectedConverstaion.value) return;
   const message = {
     id: messageIdCounter.value++,
-    // 선택된 conversation더미의 id라서
-    conversationId: selectedConversation.value.id,
+
+    conversationId: selectedConverstaion.value.id,
     sender: "admin",
     content: newMessage.value,
     timestamp: new Date(),
   };
-  // allMessages 더미에 추가
   allMessages.value.push(message);
-  // 마지막 메세지 변경
-  selectedConversation.value.lastMessage = message.content;
-  // 응답시간 계산
-  selectedConversation.value.responseTime = Math.round(
-    (new Date() - selectedConversation.value.startDate) / 1000 / 60
-  );
+  selectedConverstaion.value.lastMessage = message.content;
+  selectedConverstaion.value.responseTime = Math.round((new Date() - selectedConverstaion.value.startDate) / 1000 / 60);
   newMessage.value = "";
+  // console.log(allMessages.value);
 }
 
 // 답변 완료
 function markAnswered() {
-  if (!selectedConversation.value) return;
-  // 클릭된 답변완료의 대화의 인덱스 번호를 가져와서
-  const idx = conversations.value.findIndex((c) => c.id === selectedConversation.value.id);
-  // 불가능한 인덱스 번호가 아니면 = 모든 인덱스 번호의 답변 완료 버튼
+  if (!selectedConverstaion.value) return;
+  const idx = conversations.value.findIndex((c) => c.id === selectedConverstaion.value.id);
   if (idx !== -1) {
-    // 상태가 답변완료로 바뀜
     conversations.value[idx].status = "closed";
-    // 읽지않은 메세지 갯수 0으로
     conversations.value[idx].unreadCount = 0;
-    // 모달창 닫기
-    selectedConversation.value = null;
+    selectedConverstaion.value = null;
+    newMessage.value = "";
   }
 }
-
-// 빠른 답변
+// 빠른 답번
 function openQuick() {
-  if (!selectedConversation.value) {
-    alert("먼저 대화를 선택해주세요.");
+  if (!selectedConverstaion.value) {
+    alert("먼저 대화를 선택해 주세요.");
     return;
   }
   showQuick.value = true;
 }
-
-// 빠른 답변 선택 시
+//
 function selectTemplate(template) {
-  if (selectedConversation.value) {
+  if (selectedConverstaion.value) {
     newMessage.value = template.content;
     showQuick.value = false;
     document.querySelector('input[v-model="newMessage"]')?.focus();

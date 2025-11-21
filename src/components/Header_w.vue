@@ -79,7 +79,7 @@ const currentLang = ref(locale.value || localStorage.getItem("language") || "ko"
 const onChangeLang = () => {
   // locale.value를 현재 선택된 언어로 변경
   locale.value = currentLang.value;
-  // 선택된 언어를 브라우저 lacalStorage에 저장
+  // 선택된 언어를 브라우저 loclaStorage에 저장
   localStorage.setItem("language", currentLang.value);
 };
 </script>

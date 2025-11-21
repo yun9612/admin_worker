@@ -6,11 +6,23 @@
     </p>
     <!-- 통계 카드 -->
     <DashboardStats :stats="stats" />
+    <!-- 고객 목록 (공통 컴포넌트 사용) -->
+    <SearchTable
+      :data="customers"
+      :columns="customerColumns"
+      search-placeholder="고객명 또는 이메일로 검색"
+      :search-fields="['name', 'email']"
+      :filter-options="customerFilterOptions"
+      :filter-fn="customerFilterFn"
+      :items-per-page="itemsPerPage"
+      table-title="고객 목록"
+      total-label="명의 고객" />
   </div>
 </template>
 
 <script setup>
 import DashboardStats from "@/components/DashboardStats.vue";
+import { customersData } from "@/data/customers";
 import { ref } from "vue";
 
 const stats = ref([
@@ -42,4 +54,8 @@ const stats = ref([
     color: "text-yellow-600",
   },
 ]);
+
+const customers = ref(customersData);
+console.log(customers.value);
+
 </script>

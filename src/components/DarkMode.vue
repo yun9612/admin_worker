@@ -5,9 +5,8 @@
     <span class="text-xl">{{ isDarkMode ? "🌙" : "☀️" }}</span>
   </button>
 </template>
-
 <script setup>
-import { onMounted, ref } from "vue";
+import { ref, onMounted } from "vue";
 
 const isDarkMode = ref(false);
 // 다크모드 상태 동기화 함수
@@ -15,7 +14,7 @@ const updateDarkModeState = () => {
   isDarkMode.value = document.documentElement.classList.contains("dark");
 };
 
-// 버튼 클릭 시 모드 전환
+// 버튼 클릭시 다크모드 토글
 const toggleTheme = () => {
   if (document.documentElement.classList.contains("dark")) {
     document.documentElement.classList.remove("dark");
@@ -26,17 +25,15 @@ const toggleTheme = () => {
   }
   updateDarkModeState();
 };
-
-// 새로고침해도 다크모드 유지
+// 초기 테마 설정 (localStorage 읽기)
 onMounted(() => {
+    // 로컬에 저장된 테마를 읽어 초기 적용
   const savedTheme = localStorage.theme;
-  //   console.log(savedTheme);
   if (savedTheme === "dark") {
     document.documentElement.classList.add("dark");
-    isDarkMode.value = true;
-  } else {
+  } else if (savedTheme === "light") {
     document.documentElement.classList.remove("dark");
-    isDarkMode.value = false;
   }
+  updateDarkModeState();
 });
 </script>

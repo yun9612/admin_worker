@@ -6,52 +6,49 @@
         <div class="space-y-2">
           <label for="email" class="block text-sm font-medium text-gray-700">이메일</label>
           <input
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             type="email"
             id="email"
-            placeholder="이메일을 입력하세요."
-            required />
+            placeholder="이메일 입력하세요."
+            required
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" />
         </div>
-        <div class="space-y-2">
+        <div class="relative space-y-2">
           <label for="password" class="block text-sm font-medium text-gray-700">비밀번호</label>
           <div class="relative">
             <input
               v-model="password"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              :type="showPW ? 'text' : 'password'"
+             
               id="password"
-              placeholder="비밀번호를 입력하세요."
-              required />
+              placeholder="비밀번호 입력하세요."
+              required
+              :type="showPassword ? 'text' : 'password'"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" />
             <button
               type="button"
-              @click="togglePW"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-800">
-              {{ showPW ? "숨기기" : "보기" }}
+              @click="togglePassword"
+              class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800">
+              {{ showPassword ? "숨기기" : "보기" }}
             </button>
           </div>
         </div>
         <button
           type="submit"
-          class="w-full py-3 bg-blue-500 text-white font-medium rounded-md hover:bg-green-600 transition-colors duration-200">
+          class="w-full py-3 bg-green-500 text-white font-medium rounded-md hover:bg-green-600 transition-colors duration-200">
           로그인
         </button>
       </form>
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-
 const router = useRouter();
-
 const password = ref("");
-const showPW = ref(false);
-const togglePW = () => {
-  showPW.value = !showPW.value;
+const showPassword = ref(false);
+const togglePassword = () => {
+  showPassword.value = !showPassword.value;
 };
-
 const handleLogin = () => {
   router.push("admin/dashboard");
 };

@@ -1,9 +1,9 @@
 <template>
-  <div class="w-full p-2">
+  <div class="w-full ">
     <!-- 상단 정산 요약 카드 -->
     <div class="mb-4">
       <div
-        class="p-4 bg-linear-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-2xl text-white shadow-lg">
+        class="p-4 bg-linear-to-br from-green-300 to-green-600 dark:from-green-600 dark:to-green-700 rounded-2xl text-white shadow-lg">
         <p class="text-sm opacity-90 mb-2">이번 달 정산 금액</p>
         <p class="text-4xl font-bold mb-4">₩1,850,000</p>
         <div class="flex items-center justify-between text-sm">
@@ -38,9 +38,11 @@
         v-for="payment in filteredPayments"
         :key="payment.id"
         class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-4 shadow-sm">
-        <!-- 날짜와 상태 -->
+        <!-- 날짜와 상태  -->
         <div class="flex items-center justify-between mb-3">
-          <p class="font-semibold text-gray-900 dark:text-white">{{ payment.date }}</p>
+          <p class="font-semibold text-gray-900 dark:text-white">
+            {{ payment.date }}
+          </p>
           <span
             class="px-3 py-1 rounded-full text-xs font-medium"
             :class="
@@ -51,10 +53,9 @@
             {{ payment.status === "completed" ? "정산 완료" : "정산 대기" }}
           </span>
         </div>
-        <!-- 매장 정보 -->
+        <!-- 매장정보 -->
         <div class="flex items-start gap-3 mb-3">
-          <div
-            class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/50 flex items-center justify-center">
+          <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-900/50 flex items-center justify-center">
             <span class="text-2xl">🏪</span>
           </div>
           <div class="flex-1">
@@ -69,14 +70,11 @@
             </p>
           </div>
         </div>
-        <!-- 금액 정보 -->
-        <div
-          class="border-t border-gray-100 dark:border-gray-700 pt-3 flex items-center justify-between">
+        <!-- 금액정보 -->
+        <div class="border-t border-gray-100 dark:border-gray-700 pt-3 flex items-center justify-between">
           <div>
             <p class="text-xs text-gray-500 dark:text-gray-400">청소 금액</p>
-            <p class="text-lg font-bold text-gray-900 dark:text-white">
-              ₩{{ payment.amount.toLocaleString() }}
-            </p>
+            <p class="text-lg font-bold text-gray-900 dark:text-white">₩{{ payment.amount.toLocaleString() }}</p>
           </div>
           <div v-if="payment.status === 'completed'" class="text-right">
             <p class="text-xs text-gray-500 dark:text-gray-400">정산일</p>
@@ -95,20 +93,16 @@
     </div>
   </div>
 </template>
-
 <script setup>
-import { computed, ref } from "vue";
+import { ref, computed } from "vue";
 
-// 버튼 옵션
 const statusOptions = [
   { label: "전체", value: "all" },
   { label: "정산 완료", value: "completed" },
   { label: "정산 대기", value: "waiting" },
 ];
-// 버튼 클릭 시 필터링
 const selectedStatus = ref("all");
 // console.log(selectedStatus.value);
-
 // 정산 내역 데이터
 const payments = ref([
   {
@@ -119,7 +113,7 @@ const payments = ref([
     time: "오후 2시",
     amount: 120000,
     status: "completed",
-    paidDate: "2025년 1월 20일",
+    paidDate: "2025년 10월 20일",
   },
   {
     id: 2,
@@ -168,23 +162,22 @@ const payments = ref([
     status: "waiting",
   },
 ]);
-
-// 정산 내역 필터링 함수
+// 정산 내역 필터랑 함수
 const filteredPayments = computed(() => {
   let result = [...payments.value];
-  // 상태 필터링(정산완료 / 정산 대기)
+  // 상태 필더링(정산완료 / 정산 대기)
   if (selectedStatus.value !== "all") {
-    result = result.filter((paymeny) => paymeny.status === selectedStatus.value);
+    result = result.filter((payment) => payment.status === selectedStatus.value);
   }
   return result;
 });
-
-// 상세보기 클릭
+// 상세보기버튼 클릭시
 function viewDetail(payment) {
   alert(`
-${payment.storeName} \n정산 상세 정보 \n금액 : ₩${payment.amount.toLocaleString()} \n상태 : ${
-    payment.status === "completed" ? "정산 완료" : "정산 대기"
+${payment.storeName}\n정산 상세 정보\n금액: ₩${payment.amount.toLocaleString()}\n상태:${
+    payment.status === "complete" ? "정상 완료" : "정산 대기"
   }
+
 `);
 }
 </script>
