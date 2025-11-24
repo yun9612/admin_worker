@@ -17,7 +17,6 @@
           <div class="relative">
             <input
               v-model="password"
-             
               id="password"
               placeholder="비밀번호 입력하세요."
               required
